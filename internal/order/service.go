@@ -7,7 +7,7 @@ import (
 
 func NewOrder(email string, amount, price int) *Order {
 	return &Order{
-		ID:            fmt.Sprintf("ID - %s", time.Now().Unix()),
+		ID:            fmt.Sprintf("ID - %d", time.Now().Unix()),
 		CustomerEmail: email,
 		CreatedAt:     time.Now(),
 		Amount:        amount,

@@ -1,6 +1,11 @@
 package producer
 
-import "github.com/streadway/amqp"
+import (
+	"encoding/json"
+	"log"
+
+	"github.com/streadway/amqp"
+)
 
 type Producer struct {
 	conn    *amqp.Connection
@@ -25,4 +30,24 @@ func NewProducer(QueueName string) (*Producer, error) {
 		conn:    conn,
 		channel: ch,
 		queue:   q}, nil
+}
+
+func (p *Producer) SendMessage(T any) error {
+	body, err := json.Marshal(T)
+	if err != nil {
+		return err
+	}
+	err = p.channel.Publish("", p.queue.Name, false, false, amqp.Publishing{
+		Body:        body,
+		ContentType: "application/json",
+	})
+	if err != nil {
+		return err
+	}
+	log.Printf("Sent Message: %s", string(body))
+	return nil
+}
+
+func (p *Producer) Close() error {
+	return p.channel.Close()
 }
